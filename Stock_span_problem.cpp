@@ -1,68 +1,55 @@
-#include<bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <stack>
 using namespace std;
 
+class Solution {
+public:
+    // Function to calculate the span of stock prices for all n days.
+    vector<int> calculateSpan(int price[], int n) {
+        vector<int> span(n);
+        stack<int> s; // Stack to store indices of prices
 
-/*problem statement:-
-The stock span problem is a financial problem where we have a series of n daily price quotes for a stock and we need to calculate the span of stocks price for all n days. 
-The span Si of the stocks price on a given day i is defined as the maximum number of consecutive days just before the given day, for which the price of the stock on the current day is less than or equal to its price on the given day.
-For example, if an array of 7 days prices is given as {100, 80, 60, 70, 60, 75, 85}, then the span values for corresponding 7 days are {1, 1, 1, 2, 1, 4, 6}.
-Input:
-N = 7, price[] = [100 80 60 70 60 75 85]
-Output:
-1 1 1 2 1 4 6
-*/
+        // Span for the first day is always 1
+        span[0] = 1;
+        s.push(0); // Push index of the first day
 
-
-class Solution
-{
-    public:
-    //Function to calculate the span of stockâ€™s price for all n days.
-    vector <int> calculateSpan(int price[], int n)
-    {
-
-    vector<int> v;
-    stack<pair<int,int>> s;
-    v.push_back(1);
-    s.push({price[0],1});
-    for(int i=1;i<n;i++){
-        int count=0;
-        while(s.size()!=0){
-            auto it=s.top();
-            if(it.first>price[i]){
-                break;
-            }
-            else{
-                count=count+it.second;
+        for (int i = 1; i < n; i++) {
+            // Pop indices from the stack while the current price is greater
+            // than the price at the index stored at the top of the stack
+            while (!s.empty() && price[s.top()] <= price[i]) {
                 s.pop();
             }
+
+            // If stack is empty, it means the current price is greater than all previous prices
+            // so span is (current index + 1)
+            span[i] = (s.empty()) ? (i + 1) : (i - s.top());
+
+            // Push current index onto the stack
+            s.push(i);
         }
-        v.push_back(count+1);
-        s.push({price[i],count+1});
-    }
-    return v;
+        return span;
     }
 };
 
-int main(){
-    // taking input:
+int main() {
     int t;
-    cin>>t;
-    while(t--){
+    cin >> t; // Number of test cases
+    while (t--) {
         int n;
-        cin>>n;
-        int i,a[n];
-        for(i=0;i<n;i++){
-            cin>>a[i];
+        cin >> n; // Number of days
+        int price[n];
+        for (int i = 0; i < n; i++) {
+            cin >> price[i]; // Daily stock prices
         }
         Solution obj;
-        vector<int> s=obj.calculateSpan(a,n);
+        vector<int> span = obj.calculateSpan(price, n);
 
-        for(i=0;i<n;i++){
-            cout<<s[i]<<" ";
+        // Output the calculated spans
+        for (int s : span) {
+            cout << s << " ";
         }
-        cout<<endl;
+        cout << endl;
     }
-
     return 0;
-
 }
